@@ -6,6 +6,10 @@ import com.frankie.fun.lambda.Transaction;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -58,13 +62,19 @@ public class StreamList {
 
         List<String> words = Arrays.asList("Hello", "World");
 
-        List<Stream<String>> collect = words.stream()
-                .map(x -> x.split(""))
-                .map(Arrays::stream)
-                .distinct()
-                .collect(Collectors.toList());
+//        List<Stream<String>> collect = words.stream()
+//                .map(x -> x.split(""))
+//                .map(Arrays::stream)
+//                .distinct()
+//                .collect(Collectors.toList());
+//
+//        System.out.println(collect.toString());
 
-        System.out.println(collect.toString());
+        List<String> collect = words.stream()
+                .flatMap(w -> Arrays.stream(w.split("")))
+                .collect(Collectors.toList());
+        System.out.println(collect.size());
+        System.out.println(collect);
     }
 
     @Test
@@ -234,6 +244,22 @@ public class StreamList {
 
         triples.limit(5).forEach(x -> System.out.println(x[0] + " , " + x[1] + " , " + x[2]));
     }
+
+    @Test
+    public void readFileTest() throws IOException {
+//        Stream<String> lines = Files.lines(Paths.get("src/main/resources/kobe"), Charset.defaultCharset());
+//        Stream<String> flatMappedStream = lines.flatMap(l -> Arrays.stream(l.split(" ")));
+//        long words = flatMappedStream.distinct().count();
+//        System.out.println(words);
+
+
+        long distinctWords = Files.lines(Paths.get("src/main/resources/kobe"), Charset.defaultCharset())
+                .flatMap(l -> Arrays.stream(l.split(" ")))
+                .distinct()
+                .count();
+
+    }
+
 }
 
 
