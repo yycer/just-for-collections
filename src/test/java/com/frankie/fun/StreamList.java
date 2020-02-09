@@ -257,7 +257,17 @@ public class StreamList {
                 .flatMap(l -> Arrays.stream(l.split(" ")))
                 .distinct()
                 .count();
+    }
 
+    @Test
+    public void fibonacciTest(){
+//        Stream.iterate(new int[] {0, 1}, x -> new int[] {x[1], x[0] + x[1]})
+//                .limit(10)
+//                .forEach(x -> System.out.println(x[0] + " , " + x[1]));
+
+        Stream.iterate(new int[]{ 0, 1}, x -> new int[] {x[1], x[0] + x[1]})
+                .limit(10)
+                .forEach(x -> System.out.println(x[0]));
     }
 
 }
