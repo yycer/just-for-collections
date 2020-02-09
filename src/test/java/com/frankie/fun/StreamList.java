@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -221,6 +222,17 @@ public class StreamList {
                 .filter(x -> "Cambridge".equals(x.getTrader().getCity()))
                 .forEach(x -> System.out.println(x.getTrader().getName() + " : " + x.getValue()));
 
+    }
+
+    @Test
+    public void intStreamTest(){
+//        Stream<Integer> boxed = IntStream.rangeClosed(1, 100).boxed();
+        Stream<int[]> triples = IntStream.rangeClosed(1, 100).boxed()
+                .flatMap(x -> IntStream.rangeClosed(x, 100)
+                        .filter(y -> Math.sqrt(x * x + y * y) % 1 == 0)
+                        .mapToObj(y -> new int[]{ x, y, (int) Math.sqrt(x * x + y * y)}));
+
+        triples.limit(5).forEach(x -> System.out.println(x[0] + " , " + x[1] + " , " + x[2]));
     }
 }
 
