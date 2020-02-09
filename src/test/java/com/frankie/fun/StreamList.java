@@ -1,5 +1,6 @@
 package com.frankie.fun;
 
+import com.frankie.fun.lambda.CaloricLevel;
 import com.frankie.fun.lambda.Dish;
 import com.frankie.fun.lambda.Trader;
 import com.frankie.fun.lambda.Transaction;
@@ -308,6 +309,29 @@ public class StreamList {
         Integer min1 = Dish.menu.stream().map(Dish::getCalories).distinct().reduce(Integer::min).orElse(0);
         int     min2 = Dish.menu.stream().mapToInt(Dish::getCalories).min().orElse(0);
 
+    }
+
+    @Test
+    public void groupByTest(){
+//        Map<Dish.Type, List<Dish>> groupingByType = Dish.menu.stream().collect(Collectors.groupingBy(Dish::getType));
+//        System.out.println(groupingByType);
+
+//        Map<CaloricLevel, List<Dish>> groupingByCalories = Dish.menu.stream().collect(Collectors.groupingBy(d -> {
+//            if (d.getCalories() <= 400) return CaloricLevel.DIET;
+//            else if (d.getCalories() <= 700) return CaloricLevel.NORMAL;
+//            else return CaloricLevel.FAT;
+//        }));
+//
+//        System.out.println(groupingByCalories);
+
+
+        Map<Dish.Type, Map<CaloricLevel, List<Dish>>> collect = Dish.menu.stream()
+                .collect(Collectors.groupingBy(Dish::getType, Collectors.groupingBy(d -> {
+                    if (d.getCalories() <= 400) return CaloricLevel.DIET;
+                    else if (d.getCalories() <= 700) return CaloricLevel.NORMAL;
+                    else return CaloricLevel.FAT;
+                })));
+        System.out.println(collect);
     }
 
 }
