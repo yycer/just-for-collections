@@ -270,6 +270,46 @@ public class StreamList {
                 .forEach(x -> System.out.println(x[0]));
     }
 
+    @Test
+    public void sumCaloriesTest(){
+
+        /**
+         * sum
+         */
+        // 最直观。
+        Integer count1 = Dish.menu.stream().map(Dish::getCalories).reduce(Integer::sum).orElse(0);
+
+        // 不建议用。
+        Integer count2 = Dish.menu.stream().collect(Collectors.summingInt(Dish::getCalories));
+
+        // 性能最佳。
+        int count3 = Dish.menu.stream().mapToInt(Dish::getCalories).sum();
+
+        /**
+         * average
+         */
+        double avg = Dish.menu.stream().mapToInt(Dish::getCalories).average().orElse(0);
+
+
+        /**
+         * count
+         */
+        long count = Dish.menu.stream().map(Dish::getCalories).count();
+
+        /**
+         * max
+         */
+        Integer max1 = Dish.menu.stream().map(Dish::getCalories).distinct().reduce(Integer::max).orElse(0);
+        int     max2 = Dish.menu.stream().mapToInt(Dish::getCalories).distinct().max().orElse(0);
+
+        /**
+         * min
+         */
+        Integer min1 = Dish.menu.stream().map(Dish::getCalories).distinct().reduce(Integer::min).orElse(0);
+        int     min2 = Dish.menu.stream().mapToInt(Dish::getCalories).min().orElse(0);
+
+    }
+
 }
 
 
