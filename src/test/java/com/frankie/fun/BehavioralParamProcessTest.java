@@ -2,15 +2,12 @@ package com.frankie.fun;
 
 import com.frankie.fun.lambda.Apple;
 import com.frankie.fun.predicates.ApplePredicate;
-import com.frankie.fun.predicates.GreenApplePredicate;
-import com.frankie.fun.predicates.HeavyApplePredicate;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 
 /**
  * @author: Yao Frankie
@@ -66,16 +63,49 @@ public class BehavioralParamProcessTest {
 //        heavyApples: [Apple{color='green', weight=155}]
 
 
-
         // Step5: 使用匿名类
+//        List<Apple> greenApples = filterApple(inventory, new ApplePredicate() {
+//            @Override
+//            public boolean test(Apple a) {
+//                return "green".equals(a.getColor());
+//            }
+//        });
+//
+//        List<Apple> heavyApples = filterApple(inventory, new ApplePredicate() {
+//            @Override
+//            public boolean test(Apple a) {
+//                return a.getWeight() > 150;
+//            }
+//        });
+//
+//        System.out.println("greenApples: " + greenApples);
+//        System.out.println("heavyApples: " + heavyApples);
+
+//        greenApples: [Apple{color='green', weight=80}, Apple{color='green', weight=155}]
+//        heavyApples: [Apple{color='green', weight=155}]
 
 
         // Step6: 使用Lambda表达式
+//        List<Apple> greenApples = filterApple(inventory, (Apple a) -> "green".equals(a.getColor()));
+//        System.out.println("greenApples: " + greenApples);
+//        greenApples: [Apple{color='green', weight=80}, Apple{color='green', weight=155}]
 
 
-        // Step7: 将List类型抽象化
+        // Step7: 使用类型推断机制：lambda表达式可根据目标类型Predicate<Apple>推导出传入类型是Apple。
+//        List<Apple> greenApples = filterApple(inventory, a -> "green".equals(a.getColor()));
+//        System.out.println("greenApples: " + greenApples);
+//        greenApples: [Apple{color='green', weight=80}, Apple{color='green', weight=155}]
+
+        // Step8: 使用方法引用
+//        inventory.stream().map(a -> a.getColor()).forEach(c -> System.out.println("color: " + c));
+//        inventory.stream().map(Apple::getColor).forEach(c -> System.out.println("color: " + c));
+//        color: green
+//        color: green
+//        color: red
 
     }
+
+
 
     /**
      * 根据谓词筛选数据源，做到行为参数化。
