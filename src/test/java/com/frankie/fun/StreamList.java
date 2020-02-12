@@ -124,9 +124,9 @@ public class StreamList {
     @Test
     public void streamPracticeTest(){
         Trader raoul = new Trader("Raoul", "Cambridge");
-        Trader mario = new Trader("Mario","Milan");
-        Trader alan  = new Trader("Alan","Cambridge");
-        Trader brian = new Trader("Brian","Cambridge");
+        Trader mario = new Trader("Mario", "Milan");
+        Trader alan  = new Trader("Alan",  "Cambridge");
+        Trader brian = new Trader("Brian", "Cambridge");
 
         List<Transaction> transactions = Arrays.asList(
                 new Transaction(brian, 2011, 300),
@@ -134,14 +134,15 @@ public class StreamList {
                 new Transaction(raoul, 2011, 400),
                 new Transaction(mario, 2012, 710),
                 new Transaction(mario, 2012, 700),
-                new Transaction(alan, 2012, 950)
+                new Transaction(alan,  2012, 950)
         );
 
         // Query 1: Find all transactions from year 2011 and sort them by value (small to high).
-        List<Transaction> transactions2011 = transactions.stream()
-                .filter(x -> 2011 == x.getYear())
-                .sorted(Comparator.comparing(Transaction::getValue))
-                .collect(Collectors.toList());
+//        List<Transaction> transactions2011 = transactions.stream()
+//                .filter(x -> 2011 == x.getYear())
+//                .sorted(Comparator.comparing(Transaction::getValue))
+//                .collect(Collectors.toList());
+//        System.out.println("transactions2011.size() = " + transactions2011.size());
 
         // Query 2: What are all the unique cities where the traders work?
 //        List<String> uniqueCities = transactions.stream()
@@ -149,17 +150,20 @@ public class StreamList {
 //                .map(Trader::getCity)
 //                .distinct()
 //                .collect(Collectors.toList());
+//        System.out.println("uniqueCities = " + uniqueCities);
 
         // Improve1: Merge map.
-        List<String> uniqueCities = transactions.stream()
-                .map(x -> x.getTrader().getCity())
-                .distinct()
-                .collect(Collectors.toList());
-
-        // Improve2: Use set.
-        Set<String> uniqueCitySet = transactions.stream()
-                .map(x -> x.getTrader().getCity())
-                .collect(Collectors.toSet());
+//        List<String> uniqueCities = transactions.stream()
+//                .map(x -> x.getTrader().getCity())
+//                .distinct()
+//                .collect(Collectors.toList());
+//        System.out.println("uniqueCities = " + uniqueCities);
+//
+//        // Improve2: Use set.
+//        Set<String> uniqueCitySet = transactions.stream()
+//                .map(x -> x.getTrader().getCity())
+//                .collect(Collectors.toSet());
+//        System.out.println("uniqueCitySet = " + uniqueCitySet);
 
         // Query 3: Find all traders from Cambridge and sort them by name.
 //        List<Trader> traderFromCambridge = transactions.stream()
@@ -168,14 +172,16 @@ public class StreamList {
 //                .filter(x -> "Cambridge".equals(x.getCity()))
 //                .sorted(Comparator.comparing(Trader::getName))
 //                .collect(Collectors.toList());
+//        System.out.println("traderFromCambridge = " + traderFromCambridge);
 
         // Improve3: distinct after filter!
-        List<Trader> traderFromCambridge = transactions.stream()
-                .map(Transaction::getTrader)
-                .filter(x -> "Cambridge".equals(x.getCity()))
-                .distinct()
-                .sorted(Comparator.comparing(Trader::getName))
-                .collect(Collectors.toList());
+//        List<Trader> traderFromCambridge = transactions.stream()
+//                .filter(tran -> "Cambridge".equals(tran.getTrader().getCity()))
+//                .map(Transaction::getTrader)
+//                .distinct()
+//                .sorted(Comparator.comparing(Trader::getName))
+//                .collect(Collectors.toList());
+//        System.out.println("traderFromCambridge = " + traderFromCambridge);
 
         // Query 4: Return a string of all traders’ names sorted alphabetically.
 //        List<String> traderNames = transactions.stream()
@@ -188,27 +194,30 @@ public class StreamList {
 
         // 解题思路有误：想要的是一个字符串，它根据交易员的姓名字母顺序排列，而不是一个姓名列表！
         // 优化点：sorted、distinct尽量放在后面(数据量较小的时候)执行。
-//        String allTraderName = transactions.stream()
-//                .map(x -> x.getTrader().getName())
+//        String allTraderNameString = transactions.stream()
+//                .map(tran -> tran.getTrader().getName())
 //                .distinct()
-//                .sorted()
+//                .sorted(String::compareTo)
 //                .reduce("", (x, y) -> x + y);
+//        System.out.println("allTraderNameString = " + allTraderNameString);
 
         // 更高效率的解决方案！
-        String allTraderName = transactions.stream()
+        String allTraderNameString = transactions.stream()
                 .map(x -> x.getTrader().getName())
                 .distinct()
                 .sorted()
-                .collect(Collectors.joining());
+                .collect(Collectors.joining(", "));
+        System.out.println("allTraderNameString = " + allTraderNameString);
 
         // Query 5: Are there any trader based in Milan?
+//
 //        boolean anyTraderBasedInMilan = transactions.stream()
-//                .map(Transaction::getTrader)
-//                .anyMatch(x -> "Milan".equals(x.getCity()));
+//                .anyMatch(tran -> "Milan".equals(tran.getTrader().getCity()));
+//        System.out.println("anyTraderBasedInMilan = " + anyTraderBasedInMilan);
 
         // 尽量减少流的数量
-        boolean anyTraderBasedInMilan = transactions.stream()
-                .anyMatch(x -> "Milan".equals(x.getTrader().getCity()));
+//        boolean anyTraderBasedInMilan = transactions.stream()
+//                .anyMatch(x -> "Milan".equals(x.getTrader().getCity()));
 
 
         // Query 6: Update all transactions so that the traders from Milan are set to Cambridge.
@@ -218,20 +227,43 @@ public class StreamList {
 //                .forEach(x -> x.setCity("Cambridge"));
 
         // Query 7: What's the highest value in all the transactions?
-        Integer highestValue = transactions.stream()
-                .map(Transaction::getValue)
-                .reduce(Integer::max)
-                .orElse(0);
+//        Integer highestValue = transactions.stream()
+//                .map(Transaction::getValue)
+//                .reduce(Integer::max)
+//                .orElse(0);
+//        System.out.println("highestValue = " + highestValue);
 
-        // Query 8: What's the highest value transaction in all the transactions?
-        Optional<Transaction> maxTransaction = transactions.stream()
-                .max(Comparator.comparing(Transaction::getValue));
-        Transaction transaction = maxTransaction.get();
+//        Optional<Transaction> highestTran = transactions.stream()
+//                .collect(Collectors.maxBy(Comparator.comparingInt(Transaction::getValue)));
+//        highestTran.ifPresent(tran -> System.out.println("highestValue = " + tran.getValue()));
 
-        // Query 9: Find all traders from Cambridge and print their value.
-        transactions.stream()
-                .filter(x -> "Cambridge".equals(x.getTrader().getCity()))
-                .forEach(x -> System.out.println(x.getTrader().getName() + " : " + x.getValue()));
+//        Optional<Transaction> highestTran = transactions.stream().max(Comparator.comparingInt(Transaction::getValue));
+//        highestTran.ifPresent(tran -> System.out.println("highestValue = " + tran.getValue()));
+
+//        IntStream.rangeClosed(1, 5).forEach(System.out::println);
+//        IntStream.range(1, 5).forEach(System.out::println);
+
+//        int highestValue = transactions.stream().mapToInt(Transaction::getValue).max().orElse(0);
+//        System.out.println("highestValue = " + highestValue);
+
+        // Query 8: What's the smallest transaction in all the transactions?
+
+//        Optional<Transaction> smallestTransOpt = transactions.stream()
+//                .reduce((t1, t2) -> t1.getValue() < t2.getValue() ? t1 : t2);
+//        Transaction smallTrans = smallestTransOpt.get();
+//        System.out.println(smallTrans);
+
+//        Optional<Transaction> smallestTransOpt = transactions.stream()
+//                .min(Comparator.comparing(Transaction::getValue));
+//        Transaction smallTrans = smallestTransOpt.get();
+//        System.out.println(smallTrans);
+
+
+//        // Query 9: Find all traders from Cambridge and print their value.
+//        transactions.stream()
+//                    .filter(x -> "Cambridge".equals(x.getTrader().getCity()))
+//                    .map(Transaction::getValue)
+//                    .forEach(System.out::println);
 
     }
 
