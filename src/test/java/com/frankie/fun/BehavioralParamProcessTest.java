@@ -7,7 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author: Yao Frankie
@@ -19,7 +22,8 @@ public class BehavioralParamProcessTest {
     List<Apple> inventory = Arrays.asList(
             new Apple(80,"green"),
             new Apple(155, "green"),
-            new Apple(120, "red"));
+            new Apple(120, "red"),
+            new Apple(80, "red"));
 
     @Test
     public void test(){
@@ -92,17 +96,53 @@ public class BehavioralParamProcessTest {
 
 
         // Step7: 使用类型推断机制：lambda表达式可根据目标类型Predicate<Apple>推导出传入类型是Apple。
-//        List<Apple> greenApples = filterApple(inventory, a -> "green".equals(a.getColor()));
-//        System.out.println("greenApples: " + greenApples);
+        List<Apple> greenApples = filterApple(inventory, a -> "green".equals(a.getColor()));
+        System.out.println("greenApples: " + greenApples);
 //        greenApples: [Apple{color='green', weight=80}, Apple{color='green', weight=155}]
 
         // Step8: 使用方法引用
-//        inventory.stream().map(a -> a.getColor()).forEach(c -> System.out.println("color: " + c));
-//        inventory.stream().map(Apple::getColor).forEach(c -> System.out.println("color: " + c));
+        inventory.stream().map(a -> a.getColor()).forEach(c -> System.out.println("color: " + c));
+        inventory.stream().map(Apple::getColor).forEach(c -> System.out.println("color: " + c));
 //        color: green
 //        color: green
 //        color: red
 
+    }
+
+    @Test
+    public void complexComparatorLambdaTest(){
+        // Step1: 按照重量正序排序
+        List<Apple> sortedByWeight = inventory.stream()
+                .sorted(Comparator.comparing(Apple::getWeight)).collect(Collectors.toList());
+        System.out.println(sortedByWeight);
+
+        // Step2: 按照重量倒序排序
+        List<Apple> sortedByWeightReversely = inventory.stream()
+                .sorted(Comparator.comparing(Apple::getWeight).reversed()).collect(Collectors.toList());
+        System.out.println(sortedByWeightReversely);
+
+        // Step3: 比较链，先根据重量正序，然后根据颜色倒序
+        List<Apple> sortedByWeightAndColor = inventory.stream()
+                .sorted(Comparator.comparing(Apple::getWeight)
+                    .thenComparing(Comparator.comparing(Apple::getColor)
+                    .reversed()))
+                .collect(Collectors.toList());
+        System.out.println(sortedByWeightAndColor);
+    }
+
+    @Test
+    public void complexPredicateTest(){
+        // Step1: 筛选出绿色、重苹果。
+        List<Apple> greenAndHeavyApple = inventory.stream()
+                .filter(a -> "green".equals(a.getColor()) && a.getWeight() > 150)
+                .collect(Collectors.toList());
+        System.out.println(greenAndHeavyApple);
+
+    }
+
+    @Test
+    public void complexFunctionTest(){
+        IntStream.rangeClosed(1, 5).forEach(System.out::println);
     }
 
 
@@ -150,7 +190,7 @@ public class BehavioralParamProcessTest {
         return result;
     }
 
-    private List<Apple>  filterAppleByColor(List<Apple> inventory, String color) {
+    private List<Apple> filterAppleByColor(List<Apple> inventory, String color) {
         ArrayList<Apple> result = new ArrayList<>();
         for (Apple a: inventory){
             if (color.equals(a.getColor())){
