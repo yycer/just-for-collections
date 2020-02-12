@@ -1,15 +1,15 @@
 package com.frankie.fun;
 
 import com.frankie.fun.lambda.Apple;
+import com.frankie.fun.lambda.CaloricLevel;
+import com.frankie.fun.lambda.Dish;
 import com.frankie.fun.lambda.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author: Yao Frankie
@@ -25,9 +25,9 @@ public class CollectorTest {
             new Apple(80,  "red"));
 
     List<Order> orders = Arrays.asList(
-            new Order(UUID.randomUUID().toString(), new BigDecimal(100.30).setScale(2, BigDecimal.ROUND_HALF_UP)),
-            new Order(UUID.randomUUID().toString(), new BigDecimal(500.99).setScale(2, BigDecimal.ROUND_HALF_UP)),
-            new Order(UUID.randomUUID().toString(), new BigDecimal(391.88).setScale(2, BigDecimal.ROUND_HALF_UP))
+            new Order(UUID.randomUUID().toString(), BigDecimal.valueOf(100.30).setScale(2, BigDecimal.ROUND_HALF_UP)),
+            new Order(UUID.randomUUID().toString(), BigDecimal.valueOf(500.99).setScale(2, BigDecimal.ROUND_HALF_UP)),
+            new Order(UUID.randomUUID().toString(), BigDecimal.valueOf(391.88).setScale(2, BigDecimal.ROUND_HALF_UP))
             );
 
     @Test
@@ -64,12 +64,37 @@ public class CollectorTest {
 //        aveAmountDouble = 331.0566666666667
 //        sumAmountDouble = 993.1700000000001
 
-        BigDecimal aveBg = new BigDecimal(aveAmountDouble).setScale(2, BigDecimal.ROUND_HALF_UP);
-        BigDecimal sumBg = new BigDecimal(sumAmountDouble).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal aveBg = BigDecimal.valueOf(aveAmountDouble).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal sumBg = BigDecimal.valueOf(sumAmountDouble).setScale(2, BigDecimal.ROUND_HALF_UP);
+        
 
         System.out.println("aveBg = " + aveBg);
         System.out.println("sumBg = " + sumBg);
 //        aveBg = 331.06
 //        sumBg = 993.17
     }
+
+    @Test
+    public void groupingByTest(){
+
+        Map<Dish.Type, List<Dish>> groupingByType = Dish.menu.stream()
+                .collect(Collectors.groupingBy(Dish::getType));
+
+        System.out.println("groupingByType = " + groupingByType);
+
+        Map<CaloricLevel, List<Dish>> groupingByCalories = Dish.menu.stream()
+                .collect(Collectors.groupingBy(d -> {
+                    if      (d.getCalories() <= 400) return CaloricLevel.DIET;
+                    else if (d.getCalories() <= 700) return CaloricLevel.NORMAL;
+                    else                             return CaloricLevel.FAT;
+        }));
+        System.out.println("groupingByCalories = " + groupingByCalories);
+    }
 }
+
+
+
+
+
+
+
