@@ -72,6 +72,10 @@ public class LocalDateTimeTest {
 
 //        parsedDateTime       = 2020-02-13T11:22:33
 //        formattedDateTimeStr = 2020-02-13 11:22:33
+
+        LocalDateTime now = LocalDateTime.now();
+        String yyyyMMddHHmmss = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        System.out.println(yyyyMMddHHmmss);
     }
 }
 
