@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 
 /**
@@ -51,7 +53,31 @@ public class LocalDateTimeTest {
         LocalDate sunday = LocalDate.of(2020, 2, 16);
         LocalDate r5 = sunday.with(new NextWorkingDay());
         System.out.println(r5); // 2020-02-17
+    }
 
+    @Test
+    public void dateTimeFormatterTest(){
+        // Step1: String -> LocalDateTime
+        // "2020-02-13 11:22:33" -> 2020-02-13T11:22:33
+        String dateTimeStr = "2020-02-13 11:22:33";
+        LocalDateTime parsedDateTime = LocalDateTime
+                .parse(dateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        System.out.println("parsedDateTime       = " + parsedDateTime);
 
+        // Step2: LocalDateTime -> String
+        // 2020-02-13T11:22:33  -> "2020-02-13 11:22:33"
+        LocalDateTime dateTime = LocalDateTime.of(2020, 2, 13, 11, 22, 33);
+        String formattedDateTimeStr = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        System.out.println("formattedDateTimeStr = " + formattedDateTimeStr);
+
+//        parsedDateTime       = 2020-02-13T11:22:33
+//        formattedDateTimeStr = 2020-02-13 11:22:33
     }
 }
+
+
+
+
+
+
+
