@@ -15,15 +15,6 @@ import java.time.temporal.ChronoField;
 @SpringBootTest
 public class LocalDateTimeTest {
 
-    @Test
-    public void test1(){
-        LocalDate date = LocalDate.of(2014, 3, 18);
-        date = date.with(ChronoField.MONTH_OF_YEAR, 9);
-        date = date.plusYears(2).minusDays(10);
-        LocalDate result = date.withYear(2011);
-
-        System.out.println(date);
-    }
 
     @Test
     public void nextWorkingDayTest(){
@@ -58,23 +49,26 @@ public class LocalDateTimeTest {
     public void dateTimeFormatterTest(){
         // Step1: String -> LocalDateTime
         // "2020-02-13 11:22:33" -> 2020-02-13T11:22:33
-        String dateTimeStr = "2020-02-13 11:22:33";
-        LocalDateTime parsedDateTime = LocalDateTime
-                .parse(dateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        System.out.println("parsedDateTime       = " + parsedDateTime);
+        String dtStr1 = "2020-02-13 11:22:33";
+        LocalDateTime parsedDt1 = LocalDateTime
+                .parse(dtStr1, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        System.out.println("parsedDt1 = " + parsedDt1);
+
+        // "20200213091122" -> 2020-02-13T09:11:22
+        String dtStr2 = "20200213091122";
+        LocalDateTime parsedDt2 = LocalDateTime
+                .parse(dtStr2, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        System.out.println("parsedDt2 = " + parsedDt2);
+
 
         // Step2: LocalDateTime -> String
         // 2020-02-13T11:22:33  -> "2020-02-13 11:22:33"
-        LocalDateTime dateTime = LocalDateTime.of(2020, 2, 13, 11, 22, 33);
-        String formattedDateTimeStr = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        System.out.println("formattedDateTimeStr = " + formattedDateTimeStr);
+        String formattedDt1 = parsedDt1.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        System.out.println("formattedDt1 = " + formattedDt1);
 
-//        parsedDateTime       = 2020-02-13T11:22:33
-//        formattedDateTimeStr = 2020-02-13 11:22:33
-
-        LocalDateTime now = LocalDateTime.now();
-        String yyyyMMddHHmmss = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-        System.out.println(yyyyMMddHHmmss);
+        // 2020-02-13T09:11:22  -> "20200213091122"
+        String formattedDt2 = parsedDt2.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        System.out.println("formattedDt2 = " + formattedDt2);
     }
 
     @Test
@@ -107,6 +101,31 @@ public class LocalDateTimeTest {
 //        parisDateTime      = 2020-02-13T01:25:00.626+01:00[Europe/Paris]
 //        losAngelesDateTime = 2020-02-13T01:25:00.626-08:00[America/Los_Angeles]
 
+    }
+
+    @Test
+    public void durationTest() throws InterruptedException {
+        LocalDateTime start = LocalDateTime.now();
+        Thread.sleep(1024);
+        LocalDateTime end = LocalDateTime.now();
+
+        Duration duration = Duration.between(start, end);
+        long millis = duration.toMillis();
+        System.out.println("Duration is " + millis + " ms");
+        // Duration is 1024 ms
+    }
+
+    @Test
+    public void manipulateDateTest(){
+        LocalDate date = LocalDate.of(2014, 3, 18); // 2014-03-18
+        date = date.with(ChronoField.MONTH_OF_YEAR, 9); // 2014-09-18
+        date = date.plusYears(2).minusDays(10); // 2016-09-08
+        // Result of 'LocalDate.withYear()' is ignored
+        date.withYear(2011); // 2016-09-08 [wrong]
+        System.out.println(date);
+
+        date = date.withYear(2011);
+        System.out.println(date); // 2011-09-08
     }
 }
 

@@ -9,6 +9,7 @@ import com.frankie.fun.lambda.Apple;
 public class GreenApplePredicate implements ApplePredicate {
     @Override
     public boolean test(Apple a) {
+        System.out.println(this);
         return "green".equals(a.getColor());
     }
 }
