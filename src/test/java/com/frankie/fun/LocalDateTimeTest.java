@@ -4,8 +4,7 @@ import com.frankie.fun.dateAndTime.NextWorkingDay;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 
@@ -76,6 +75,38 @@ public class LocalDateTimeTest {
         LocalDateTime now = LocalDateTime.now();
         String yyyyMMddHHmmss = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         System.out.println(yyyyMMddHHmmss);
+    }
+
+    @Test
+    public void zoneIdTest(){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        System.out.println("localDateTime = " + localDateTime);
+
+        LocalDateTime utcDateTime = LocalDateTime.now(ZoneOffset.UTC);
+        System.out.println("utcDateTime   = " + utcDateTime);
+
+        ZoneId tokyoZoneId = ZoneId.of("Asia/Tokyo");
+        ZonedDateTime tokyoNowByZoneId = utcDateTime.atZone(tokyoZoneId);
+        System.out.println("tokyoNowByZoneId     = " + tokyoNowByZoneId);
+
+        LocalDateTime tokyoNowByZoneOffset = LocalDateTime.now(ZoneOffset.of("+9"));
+        System.out.println("tokyoNowByZoneOffset = " + tokyoNowByZoneOffset);
+
+        ZoneId parisZoneId = ZoneId.of("Europe/Paris");
+        ZonedDateTime parisDateTime = utcDateTime.atZone(parisZoneId);
+        System.out.println("parisDateTime      = " + parisDateTime);
+
+        ZoneId losAngelesZoneId = ZoneId.of("America/Los_Angeles");
+        ZonedDateTime losAngelesDateTime = utcDateTime.atZone(losAngelesZoneId);
+        System.out.println("losAngelesDateTime = " + losAngelesDateTime);
+
+//        localDateTime = 2020-02-13T09:25:00.626
+//        utcDateTime   = 2020-02-13T01:25:00.626
+//        tokyoNowByZoneId     = 2020-02-13T01:25:00.626+09:00[Asia/Tokyo]
+//        tokyoNowByZoneOffset = 2020-02-13T10:25:00.626
+//        parisDateTime      = 2020-02-13T01:25:00.626+01:00[Europe/Paris]
+//        losAngelesDateTime = 2020-02-13T01:25:00.626-08:00[America/Los_Angeles]
+
     }
 }
 
