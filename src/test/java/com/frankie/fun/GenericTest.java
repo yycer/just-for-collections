@@ -70,6 +70,7 @@ public class GenericTest {
         }
     }
 
+
     /**
      * 1. "a":"5"    -> 5
      * 2. "b":"true" -> 0
