@@ -43,7 +43,7 @@ public class Shop {
     }
 
 
-    private void delay() {
+    public static void delay() {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
