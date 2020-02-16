@@ -8,11 +8,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author: Yao Frankie
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @SpringBootTest
 public class CompletableFutureTest {
 
-    public final List<Shop> shops = buildShops(8);
+    public final List<Shop> shops = buildShops(4);
 
     public final String productName = "Mac";
 
@@ -50,7 +50,8 @@ public class CompletableFutureTest {
     public void getPriceAsyncTest(){
         LocalDateTime step1 = LocalDateTime.now();
         Shop jd = new Shop("JD");
-        Future<String> macFuturePrice = jd.getPriceAsync("Mac");
+        Future<String> macFuturePrice = jd.getPriceAsync1("Mac");
+//        Future<String> macFuturePrice = jd.getPriceUsingFuture("Mac");
         LocalDateTime step2 = LocalDateTime.now();
         System.out.println("Invocation returned after " + Duration.between(step1, step2).toMillis() + " ms.");
 
@@ -70,8 +71,8 @@ public class CompletableFutureTest {
 
         LocalDateTime start = LocalDateTime.now();
 //        getAllPrice();        // Using 4003 ms
-        getAllPriceUsingPS(); // Using 1004 ms
-//        getAllPriceUsingCF();   // Using 1004 ms
+//        getAllPriceUsingPS(); // Using 2005 ms
+        getAllPriceUsingCF();   // Using 1003 ms
         LocalDateTime end = LocalDateTime.now();
         System.out.println("Using " + Duration.between(start, end).toMillis() + " ms");
     }
@@ -98,7 +99,8 @@ public class CompletableFutureTest {
     public List<String> getAllPriceUsingCF(){
         List<CompletableFuture<String>> futurePriceList = shops.stream()
                 .map(s -> CompletableFuture
-                        .supplyAsync(() -> String.format("%s:%s", productName, s.getPrice(productName)), executor))
+                        .supplyAsync(() -> String.format("%s:%s",
+                                productName, s.getPrice(productName)), executor))
                 .collect(Collectors.toList());
 
         List<String> priceList = futurePriceList.stream()
@@ -106,13 +108,16 @@ public class CompletableFutureTest {
                 .collect(Collectors.toList());
 
         return priceList;
+
+
     }
 
     @Test
     public void multiInvocationTest(){
         LocalDateTime start = LocalDateTime.now();
 //        getMultiInvocation();
-        getMultiInvocationUsingCF();
+//        getMultiInvocationUsingCF();
+        responseTest();
         LocalDateTime end = LocalDateTime.now();
         System.out.println("Using " + Duration.between(start, end).toMillis() + " ms");
     }
@@ -140,14 +145,27 @@ public class CompletableFutureTest {
                 .collect(Collectors.toList());
     }
 
+    public void responseTest(){
+        LocalDateTime start = LocalDateTime.now();
+        CompletableFuture[] completableFutures = shops.stream()
+                .map(shop -> CompletableFuture.supplyAsync(() ->
+                        shop.getPrice(productName), executor))
+                .map(fs -> fs.thenApply(Quote::buildQuote))
+                .map(fq -> fq.thenCompose(quote ->
+                        CompletableFuture.supplyAsync(() ->
+                                Discount.applyDiscount(quote), executor)))
+                .map(fs -> fs.thenAccept(s ->
+                        System.out.println(s + " done in " +
+                                Duration.between(start, LocalDateTime.now()).toMillis())))
+                .toArray(CompletableFuture[]::new);
+        CompletableFuture.allOf(completableFutures).join();
+//        CompletableFuture.anyOf(completableFutures).join();
+    }
+
     public List<Shop> buildShops(int num){
-        ArrayList<Shop> shops = new ArrayList<>();
-        int i = 0;
-        while (i < num){
-            shops.add(new Shop(String.valueOf(i)));
-            i++;
-        }
-        return shops;
+        return IntStream.range(0, num)
+                .mapToObj(i -> new Shop(String.valueOf(i)))
+                .collect(Collectors.toList());
     }
 
     @Test

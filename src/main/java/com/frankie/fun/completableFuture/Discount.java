@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 public class Discount {
 
     public static String applyDiscount(Quote quote){
-        Shop.delay();
+        Shop.randomDelay();
         BigDecimal priceBd = BigDecimal.valueOf(Double.parseDouble(quote.getPrice()) * 0.8)
                 .setScale(2, BigDecimal.ROUND_UP);
         return String.valueOf(priceBd);
